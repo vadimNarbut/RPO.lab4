@@ -15,14 +15,14 @@ class NotesApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/':(context) => NotesListScreen(),
+        '/': (context) => NotesListScreen(),
         '/create': (context) => CreateNoteScreen(),
       },
-      onGenerateRoute: (settings){
-        if(settings.name == '/detail'){
+      onGenerateRoute: (settings) {
+        if (settings.name == '/detail') {
           final Note note = settings.arguments as Note;
           return MaterialPageRoute(
-            builder: (context){
+            builder: (context) {
               return NoteDetailScreen(note: note);
             },
           );
@@ -33,7 +33,12 @@ class NotesApp extends StatelessWidget {
   }
 }
 
-class NotesListScreen extends StatelessWidget {
+class NotesListScreen extends StatefulWidget {
+  @override
+  _NotesListScreenState createState() => _NotesListScreenState();
+}
+
+class _NotesListScreenState extends State<NotesListScreen> {
   final List<Note> notes = [
     Note(
       title: 'Заметка 1',
@@ -68,11 +73,13 @@ class NotesListScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton( //это плавающая кнопка действия, которая отображается в правом нижнем углу экрана. Она содержит:
-        onPressed: () { //функция, которая вызывается при нажатии на кнопку. В данном случае она переходит на экран CreateNoteScreen
-          Navigator.pushNamed(
-              context,
-              '/create'
-          );
+        onPressed: () async { //функция, которая вызывается при нажатии на кнопку. В данном случае она переходит на экран CreateNoteScreen
+          final newNote = await Navigator.pushNamed(context, '/create');
+          if (newNote != null && newNote is Note) {
+            setState(() {
+              notes.add(newNote);
+            });
+          }
         },
         child: Icon(Icons.add),//иконка, отображаемая на кнопке (в данном случае это иконка добавления).
       ),
@@ -184,8 +191,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   content: _contentController.text,
                   lastEdited: DateTime.now(),
                 );
-                // Добавьте логику для сохранения новой заметки
-                Navigator.pop(context); //Функция Navigator.pop используется для возврата на предыдущий экран.
+                Navigator.pop(context, newNote);
               },
               child: Text('Создать'),
             ),
