@@ -13,7 +13,22 @@ class NotesApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: NotesListScreen(),
+      initialRoute: '/',
+      routes: {
+        '/':(context) => NotesListScreen(),
+        '/create': (context) => CreateNoteScreen(),
+      },
+      onGenerateRoute: (settings){
+        if(settings.name == '/detail'){
+          final Note note = settings.arguments as Note;
+          return MaterialPageRoute(
+              builder: (context){
+                return NoteDetailScreen(note: note);
+              },
+          );
+        }
+        return null;
+      },
     );
   }
 }
@@ -43,11 +58,10 @@ class NotesListScreen extends StatelessWidget {
             subtitle: Text(note.content), //содержание заметки.
             trailing: Text(note.lastEdited.toString()), // дата последнего редактирования заметки.
             onTap: () { //функция, которая вызывается при нажатии на элемент списка.
-              Navigator.push( //используется для перехода на новый экран. Он принимает два параметра:
+              Navigator.pushNamed( //используется для перехода на новый экран.
                 context, //текущий контекст.
-                MaterialPageRoute( //маршрут, который создает новый экран. В данном случае это экран
-                  builder: (context) => NoteDetailScreen(note: note), //который принимает заметку в качестве параметра.
-                ),
+                '/detail',
+                arguments: note,
               );
             },
           );
@@ -55,11 +69,9 @@ class NotesListScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton( //это плавающая кнопка действия, которая отображается в правом нижнем углу экрана. Она содержит:
         onPressed: () { //функция, которая вызывается при нажатии на кнопку. В данном случае она переходит на экран CreateNoteScreen
-          Navigator.push(
+          Navigator.pushNamed(
             context,
-            MaterialPageRoute(
-              builder: (context) => CreateNoteScreen(),
-            ),
+            '/create'
           );
         },
         child: Icon(Icons.add),//иконка, отображаемая на кнопке (в данном случае это иконка добавления).
@@ -68,44 +80,45 @@ class NotesListScreen extends StatelessWidget {
   }
 }
 
-class NoteDetailScreen extends StatefulWidget {
-  final Note note;
+class NoteDetailScreen extends StatefulWidget { //Этот класс представляет экран для отображения и редактирования выбранной заметки. Он наследуется от StatefulWidget, что означает, что его состояние может изменяться.
+  final Note note; //Поле note хранит объект заметки, который будет отображаться и редактироваться на этом экране. Оно объявлено как final, что означает, что его значение не может быть изменено после инициализации.
 
-  NoteDetailScreen({required this.note});
+  NoteDetailScreen({required this.note}); //Конструктор класса NoteDetailScreen, который принимает обязательный параметр note и инициализирует соответствующее поле.
 
-  @override
+  @override //Аннотация @override указывает, что метод переопределяет метод из родительского класса.
   _NoteDetailScreenState createState() => _NoteDetailScreenState();
-}
+} //Метод createState создает и возвращает экземпляр состояния _NoteDetailScreenState, который будет управлять состоянием виджета.
 
-class _NoteDetailScreenState extends State<NoteDetailScreen> {
+class _NoteDetailScreenState extends State<NoteDetailScreen> { //Этот класс представляет состояние виджета NoteDetailScreen. Он наследуется от State<NoteDetailScreen>.
   late TextEditingController _titleController;
   late TextEditingController _contentController;
+//Эти поля объявляют контроллеры для текстовых полей заголовка и содержания заметки. Контроллеры используются для управления текстом в текстовых полях.
 
   @override
-  void initState() {
+  void initState() { //Метод initState вызывается при инициализации состояния виджета. В нем создаются экземпляры контроллеров и инициализируются значениями из переданной заметки.
     super.initState();
     _titleController = TextEditingController(text: widget.note.title);
     _contentController = TextEditingController(text: widget.note.content);
-  }
+  } //Эти строки инициализируют контроллеры значениями заголовка и содержания заметки.
 
   @override
-  void dispose() {
+  void dispose() { //Метод dispose вызывается при удалении виджета. В нем освобождаются ресурсы, занятые контроллерами.
     _titleController.dispose();
     _contentController.dispose();
     super.dispose();
-  }
+  } //Эти строки освобождают ресурсы, занятые контроллерами.
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+  Widget build(BuildContext context) { //Метод build создает и возвращает виджет, который будет отображаться на экране. Он принимает параметр BuildContext, который предоставляет доступ к дереву виджетов.
+    return Scaffold( //Scaffold - это контейнер для базовой структуры визуального интерфейса приложения. Он предоставляет такие элементы, как AppBar, Drawer, FloatingActionButton и другие.
+      appBar: AppBar( //AppBar - это верхняя панель приложения. В данном случае она содержит заголовок “Редактирование заметки”.
         title: Text('Редактирование заметки'),
       ),
-      body: Padding(
+      body: Padding( //Padding - это виджет, который добавляет отступы вокруг своего дочернего виджета. В данном случае отступы равны 16 пикселям.
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: Column( //Column - это виджет, который располагает свои дочерние виджеты вертикально.
           children: [
-            TextField(
+            TextField( //TextField - это виджет для ввода текста. В данном случае он используется для ввода заголовка и содержания заметки. Контроллеры _titleController и _contentController управляют текстом в этих полях.
               controller: _titleController,
               decoration: InputDecoration(labelText: 'Заголовок'),
             ),
@@ -116,14 +129,14 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
               maxLines: null,
             ),
             SizedBox(height: 16.0),
-            ElevatedButton(
+            ElevatedButton( //ElevatedButton - это виджет кнопки с приподнятым стилем. В данном случае кнопка используется для сохранения изменений в заметке. При нажатии на кнопку вызывается функция, которая обновляет заголовок, содержание и дату последнего редактирования заметки, а затем возвращает пользователя на предыдущий экран.
               onPressed: () {
-                setState(() {
+                setState(() { //Функция setState используется для обновления состояния виджета. В данном случае она обновляет заголовок, содержание и дату последнего редактирования заметки.
                   widget.note.title = _titleController.text;
                   widget.note.content = _contentController.text;
                   widget.note.lastEdited = DateTime.now();
                 });
-                Navigator.pop(context);
+                Navigator.pop(context); //Функция Navigator.pop используется для возврата на предыдущий экран.
               },
               child: Text('Сохранить'),
             ),
