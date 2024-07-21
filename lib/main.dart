@@ -185,7 +185,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   lastEdited: DateTime.now(),
                 );
                 // Добавьте логику для сохранения новой заметки
-                Navigator.pop(context);
+                Navigator.pop(context); //Функция Navigator.pop используется для возврата на предыдущий экран.
               },
               child: Text('Создать'),
             ),
