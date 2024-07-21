@@ -48,6 +48,12 @@ class _NotesListScreenState extends State<NotesListScreen> {
     // Добавьте больше заметок по необходимости
   ];
 
+  void _deleteNote(Note note){
+    setState(() {
+      notes.remove(note);
+    });
+  }
+
   @override
   Widget build(BuildContext context) { //Этот аннотационный метод указывает, что метод build переопределяет метод из родительского класса StatelessWidget
     return Scaffold( //это контейнер для базовой структуры визуального интерфейса приложения. Он предоставляет такие элементы, как AppBar, Drawer, FloatingActionButton и другие.
@@ -61,7 +67,18 @@ class _NotesListScreenState extends State<NotesListScreen> {
           return ListTile( // это виджет, который представляет одну строку в списке. Он содержит:
             title: Text(note.title), //заголовок заметки.
             subtitle: Text(note.content), //содержание заметки.
-            trailing: Text(note.lastEdited.toString()), // дата последнего редактирования заметки.
+            //trailing: Text(note.lastEdited.toString()),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    _deleteNote(note);
+                  },
+                ),
+              ],
+            ),// дата последнего редактирования заметки.
             onTap: () { //функция, которая вызывается при нажатии на элемент списка.
               Navigator.pushNamed( //используется для перехода на новый экран.
                 context, //текущий контекст.
