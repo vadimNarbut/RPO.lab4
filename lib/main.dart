@@ -22,9 +22,9 @@ class NotesApp extends StatelessWidget {
         if(settings.name == '/detail'){
           final Note note = settings.arguments as Note;
           return MaterialPageRoute(
-              builder: (context){
-                return NoteDetailScreen(note: note);
-              },
+            builder: (context){
+              return NoteDetailScreen(note: note);
+            },
           );
         }
         return null;
@@ -70,8 +70,8 @@ class NotesListScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton( //это плавающая кнопка действия, которая отображается в правом нижнем углу экрана. Она содержит:
         onPressed: () { //функция, которая вызывается при нажатии на кнопку. В данном случае она переходит на экран CreateNoteScreen
           Navigator.pushNamed(
-            context,
-            '/create'
+              context,
+              '/create'
           );
         },
         child: Icon(Icons.add),//иконка, отображаемая на кнопке (в данном случае это иконка добавления).
